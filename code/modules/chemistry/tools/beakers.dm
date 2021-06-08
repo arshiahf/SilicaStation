@@ -86,6 +86,49 @@
 
 		..(A, user)
 
+	stoppered
+		var/stopper = null
+		maptext_width = 64
+
+		is_open_container()
+			return isnull(stopper)
+
+		attackby(obj/A, mob/user)
+			if(istype(A, /obj/item/beakerlid))
+				stopper = A
+				user.drop_item(A)
+				A.set_loc(src)
+				src.maptext = "STOPPERED"
+				boutput(user, __blue("You put [A] onto [src]."))
+				return
+			. = ..()
+
+		attack_hand(mob/user)
+			if(!isnull(stopper) && (src in user.equipped_list()))
+				user.put_in_hand_or_drop(stopper)
+				boutput(user, __blue("You remove [src.stopper] from [src]"))
+				src.reagents.temperature_react()
+				src.maptext = null
+				stopper = null
+				return
+			. = ..()
+
+
+
+
+/obj/item/beakerlid
+	name = "beaker lid"
+	icon = 'icons/obj/writing.dmi'
+	icon_state = "paper_blank"
+	wear_image_icon = 'icons/mob/head.dmi'
+	inhand_image_icon = 'icons/mob/inhand/hand_books.dmi'
+	item_state = "paper"
+	throwforce = 0
+	w_class = W_CLASS_TINY
+	throw_speed = 3
+	throw_range = 15
+	layer = OBJ_LAYER
+
 /* =================================================== */
 /* -------------------- Sub-Types -------------------- */
 /* =================================================== */
